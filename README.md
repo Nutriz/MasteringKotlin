@@ -20,7 +20,7 @@ val database: AppDatabase by lazy { AppDatabase.getInstance(appInstance) }
 
 Cela peut être utile si la propriété est lourde a initialiser et qu'elle n'est pas utilisée au premier plan (exemple: une classe personne qui stocke des adresses supplémentaires affichées seulement si l'utilisateur demande la vue détaillée de la personne). Également utile pour initialiser une propriété qui a besoin d'un Context ou une Activity, créées que lorsque la classe s'initialise.
 
-> Kotlin in action (p. 190): 7.5.2 Using delegated properties: lazy initialization and “by lazy()”
+> Kotlin in Action (p. 190): 7.5.2 Using delegated properties: lazy initialization and “by lazy()”
 
 > kotlinlang: https://kotlinlang.org/docs/reference/delegated-properties.html#lazy
 
@@ -46,8 +46,48 @@ class CountingSet<T>(
 
 *Dans cet exemple, toutes les méthodes de l'interface `MutableCollection<T>` ont été implémentées par l'objet `innerList` sauf la méthode `add(element: T)` qui a été overridée avec un comportement différent.*
 
-> Kotlin in action (p. 91): 4.3.3 Class delegation: using the `by` keyword
+> Kotlin in Action (p. 91): 4.3.3 Class delegation: using the `by` keyword
 
 > kotlinlang: https://kotlinlang.org/docs/reference/delegation.html#implementation-by-delegation
 
 > Voir aussi [by lazy()](#by-lazy()), Delegated Properties
+
+## Annotations
+
+## @JvmOverloads
+
+Permet de générer des surcharge de méthodes Java pour les paramètres optionnels d'une méthode Kotlin. Sans cela, du code Java consommant une classe Kotlin devra à chaque fois utiliser la signature complète.
+
+Exemple simple :
+```kotlin
+// Kotlin
+class ClassWithDefaultArguments @JvmOverloads constructor(
+        name: String,
+        age: Int = 42,
+        isMale: Boolean = true
+)
+```
+
+```java
+// Consomme une classe Kotlin avec des paramètres par défaut en Java  
+new ClassWithDefaultArgs("Joe");
+new ClassWithDefaultArgs("Joe", 12);
+new ClassWithDefaultArgs("Joe", 12, false);// sans @JvmOverloads, seule cette dernière méthode aurai pu être utilisée
+```
+
+> Fonctionne également avec les méthodes autre que les constructeur  
+
+Permet également de consommer une classe Java en Kotlin qui attends la surcharge de plusieurs méthodes.
+
+Exemple avec l'héritage de la class `View` :
+
+```kotlin
+class MyCustomView @JvmOverloads constructor(
+        context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+) : View(context, attrs, defStyleAttr) {
+}
+```
+
+> Kotlin in Action (p. 49): 3.2.2 Default parameter values
+
+> kotlinlang: [Overloads generation](https://kotlinlang.org/docs/reference/java-to-kotlin-interop.html#overloads-generation)
